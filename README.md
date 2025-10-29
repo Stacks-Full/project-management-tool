@@ -94,7 +94,7 @@ on their primary role but also assist others when necessary.
 ## 6. Development Utilities & Environment
 
 ### A. Environment Setup
-1.  **Clone the Repository:** `git clone <repo-url>`
+1.  **Clone the Repository:** `git clone git@github.com:Stacks-Full/project-management-tool.git`
 2.  **Use Docker:** We will use Docker to ensure consistent environments.
     * Use the command
         `docker-compose up --build` to start both the backend (FastAPI) and the database (MySQL).
