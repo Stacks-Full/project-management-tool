@@ -21,8 +21,6 @@ COPY requirements/base.txt /tmp/requirements/
 COPY requirements/dev.txt /tmp/requirements/
 
 # 3. Install Python dependencies
-# RUN pip install --no-cache-dir -r /tmp/requirements/base.txt
-# RUN pip install --no-cache-dir -r /tmp/requirements/dev.txt
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r /tmp/requirements/base.txt -r /tmp/requirements/dev.txt
 
