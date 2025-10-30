@@ -128,8 +128,15 @@ on their primary role but also assist others when necessary.
 4.  **Access the Application:**
     * **Frontend:** `http://localhost:5173`
     * **Backend API:** `http://localhost:8000`
-    * **API Health:** `http://localhost:8000/health`
     * **API Docs (Swagger):** `http://localhost:8000/docs`
+    * **API Health:** `http://localhost:8000/health` should produce output:
+    ```bash
+    {"status":"ok","database":"connected"}%
+    ```
+
+    > [!NOTE]
+    > If you encounter port conflicts, you can stop other services using these ports or 
+    modify the ports inside `docker-compose.yml`
 
 
 ### C. Testing & Documentation
