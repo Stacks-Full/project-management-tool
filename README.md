@@ -93,15 +93,53 @@ on their primary role but also assist others when necessary.
 
 ## 6. Development Utilities & Environment
 
-### A. Environment Setup
-1.  **Clone the Repository:** `git clone git@github.com:Stacks-Full/project-management-tool.git`
-2.  **Use Docker:** We will use Docker to ensure consistent environments.
-    * Use the command
-        `docker-compose up --build` to start both the backend (FastAPI) and the database (MySQL).
-3.  **Install Python Dependencies (if not using Docker):**
-    `pip install -r requirements.txt`
+### A. Prerequisite
+- **Python 3.11**
+- **Docker**
+- **Git**
+- **Node.js 20**
 
-### B. Testing & Documentation
+### B. Environment Setup
+1.  **Clone the Repository:**
+    ```bash
+    git clone git@github.com:Stacks-Full/project-management-tool.git
+    ```
+2.  **Configure Environment:** Create a `.env` file by copying `env.example`.
+    **DO NOT** commit `.env` to Git.
+    ```bash
+    cp env.example .env
+    ```
+3.  **Use Docker (The Standard Environment):** We use Docker Compose.
+
+    * **First-Time Setup (Build & Run):**
+        ```bash
+        docker compose up --build -d
+        ```
+    * **Check Container Status:**
+    ```bash
+        docker compose ps
+    ```
+    * **Subsequent Runs (Start/Stop):**
+        ```bash
+        docker compose start
+        docker compose stop
+        ```
+
+4.  **Access the Application:**
+    * **Frontend:** `http://localhost:5173`
+    * **Backend API:** `http://localhost:8000`
+    * **API Docs (Swagger):** `http://localhost:8000/docs`
+    * **API Health:** `http://localhost:8000/health` should produce output:
+    ```bash
+    {"status":"ok","database":"connected"}%
+    ```
+
+    > [!NOTE]
+    > If you encounter port conflicts, you can stop other services using these ports or 
+    modify the ports inside `docker-compose.yml`
+
+
+### C. Testing & Documentation
 * **Testing:** We will use **Pytest** for backend testing. Always write tests for new complex logic.
 * **API Documentation:** FastAPI provides automatic API documentation (Swagger UI/ReDoc).
     Access it via `/docs` or `/redoc` when the server is running. Ensure your Pydantic schemas and
@@ -139,3 +177,6 @@ A Pull Request **is not ready for review** (and definitely not ready to merge) u
 > We are here to help each other. If you get stuck, don't waste more than 30 minutes. Post your
 > question in our group chat, and include your code, the full traceback, and what you have
 > already tried. **Ask before you code if you are unsure of the API contract.** We will win as a team."
+
+
+
