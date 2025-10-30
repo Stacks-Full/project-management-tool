@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file (if not running in Docker, Docker handles it)
 load_dotenv()
 
-# --- Retrieve DB Credentials from Environment ---
+# Retrieve DB Credentials from Environment
 # The environment variables are passed from the docker-compose.yml
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")

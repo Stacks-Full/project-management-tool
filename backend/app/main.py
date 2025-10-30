@@ -13,14 +13,14 @@ def wait_for_db():
     for i in range(max_retries):
         try:
             models.create_db_tables()
-            print("✅ Database tables created successfully!")
+            print("Database tables created successfully!")
             return
         except Exception as e:
-            print(f"⏳ Database not ready yet (attempt {i+1}/{max_retries}): {e}")
+            print(f"Database not ready yet (attempt {i+1}/{max_retries}): {e}")
             if i < max_retries - 1:
                 time.sleep(5)
             else:
-                print("❌ Could not connect to database after multiple attempts")
+                print("Could not connect to database after multiple attempts")
                 raise
 
 wait_for_db()

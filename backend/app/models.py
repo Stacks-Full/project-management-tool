@@ -1,4 +1,3 @@
-
 from sqlalchemy import Column, Integer, String
 from .database import Base, engine
 
@@ -14,7 +13,7 @@ class Project(Base):
     description = Column(String(255))
 
 # Create tables in the database (if they don't exist)
-# NOTE: In a real app, you would use Alembic for migrations, but this is fine for dev setup.
+# NOTE: In a real app, Alembic is used for migrations, but this is fine for dev setup.
 def create_db_tables():
     """Attempts to create all defined tables in the connected database."""
     print("Attempting to create database tables...")
