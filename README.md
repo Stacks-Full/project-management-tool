@@ -128,6 +128,7 @@ on their primary role but also assist others when necessary.
 4.  **Access the Application:**
     * **Frontend:** `http://localhost:5173`
     * **Backend API:** `http://localhost:8000`
+    * **API Health:** `http://localhost:8000/health`
     * **API Docs (Swagger):** `http://localhost:8000/docs`
 
 
