@@ -1,0 +1,6 @@
+fastapi==0.120.1
+sqlmodel==0.0.27
+sqlalchemy==2.0.23
+mysqlclient==2.2.7
+python-dotenv==1.0.0
+python-multipart
