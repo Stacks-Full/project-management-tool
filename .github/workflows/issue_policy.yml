@@ -1,0 +1,103 @@
+name: Enforce Issue Type Rules (Admins Exempt)
+
+on:
+  issues:
+    types: [opened, assigned]
+
+jobs:
+  enforce:
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+      pull-requests: read
+
+    steps:
+      - name: Enforce issue and assignment policies
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue
+            const actor = context.payload.sender.login
+            const actionType = context.payload.action
+            const repoOwner = context.repo.owner
+            const repoName = context.repo.repo
+
+            // Get permission level of the user
+            const { data: permission } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: repoOwner,
+              repo: repoName,
+              username: actor
+            })
+            const userPermission = permission.permission
+
+            // === Handle Issue Creation Rules ===
+            if (actionType === 'opened') {
+              // Allow all admins/maintainers
+              if (['admin', 'maintain'].includes(userPermission)) {
+                console.log(`${actor} is admin/maintainer — can create any issue.`)
+                return
+              }
+
+              // Check for "bug" keyword or label
+              const hasBugLabel = (issue.labels || []).some(label =>
+                label.name.toLowerCase().includes('bug')
+              )
+              const mentionsBug = issue.title.toLowerCase().includes('bug') ||
+                                  issue.body?.toLowerCase().includes('bug')
+
+              if (!hasBugLabel && !mentionsBug) {
+                // Close issue and leave comment
+                await github.rest.issues.update({
+                  owner: repoOwner,
+                  repo: repoName,
+                  issue_number: issue.number,
+                  state: 'closed'
+                })
+
+                await github.rest.issues.createComment({
+                  owner: repoOwner,
+                  repo: repoName,
+                  issue_number: issue.number,
+                  body: `⚠️ Hi @${actor}, only **bug reports** are allowed from contributors. Please use the Bug Report template or include 'bug' in your title/labels.`
+                })
+
+                console.log(`${actor}'s issue was closed — not a bug.`)
+              } else {
+                console.log(`${actor} created a bug-type issue — allowed.`)
+              }
+
+              return
+            }
+
+            // === Handle Assignment Rules ===
+            if (actionType === 'assigned') {
+              const assigner = actor
+              const assignees = issue.assignees.map(a => a.login)
+
+              // Admins/maintainers can assign anyone
+              if (['admin', 'maintain'].includes(userPermission)) {
+                console.log(`${assigner} is admin/maintainer — assignment allowed.`)
+                return
+              }
+
+              // Non-admins can only assign themselves
+              const invalidAssignees = assignees.filter(a => a !== assigner)
+              if (invalidAssignees.length > 0) {
+                await github.rest.issues.removeAssignees({
+                  owner: repoOwner,
+                  repo: repoName,
+                  issue_number: issue.number,
+                  assignees: invalidAssignees
+                })
+
+                await github.rest.issues.createComment({
+                  owner: repoOwner,
+                  repo: repoName,
+                  issue_number: issue.number,
+                  body: `⚠️ Only admins can assign others. @${assigner}, please only assign yourself to issues.`
+                })
+              } else {
+                console.log(`${assigner} assigned themselves — allowed.`)
+              }
+            }
