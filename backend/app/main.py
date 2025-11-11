@@ -4,7 +4,6 @@ from . import database, models
 import os
 import time
 from sqlalchemy import text
-import MySQLdb
 
 # Create the tables on startup
 def wait_for_db():
