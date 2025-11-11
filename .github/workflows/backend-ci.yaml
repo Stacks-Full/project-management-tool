@@ -1,0 +1,93 @@
+name: Python Backend CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Run Tests
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+
+    env:
+      PYTHONPATH: ${{ github.workspace }}/backend
+
+    defaults:
+      run:
+        working-directory: ./backend
+        
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements/base.txt', 'backend/requirements/dev.txt') }}
+          # The RESTORE-KEYS are used for a partial/fallback match
+          # This looks for any cache that starts with 'Linux-pip-'
+          restore-keys: |
+            ${{ runner.os }}-pip-
+          
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements/base.txt
+          pip install -r requirements/dev.txt
+
+      - name: Run unit tests
+        run: |
+          pytest tests --maxfail=1 --disable-warnings --quiet
+
+  lint:
+    runs-on: ubuntu-latest
+    name: Code quality check
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+
+    env:
+      PYTHONPATH: ${{ github.workspace }}/backend
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements/base.txt', 'backend/requirements/dev.txt') }}
+          # The RESTORE-KEYS are used for a partial/fallback match
+          # This looks for any cache that starts with 'Linux-pip-'
+          restore-keys: |
+            ${{ runner.os }}-pip-
+          
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements/base.txt
+          pip install -r requirements/dev.txt
+
+      - name: Run Code Linter (Ruff)
+        run: ruff check .

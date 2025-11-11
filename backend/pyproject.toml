@@ -1,0 +1,63 @@
+[tool.black]
+# Black's configuration is simple and opinionated.
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.pytest_cache
+  | \.vscode
+  | migrations
+  | venv
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".vscode",
+    "migrations",
+    "venv",
+    "tests",
+]
+
+[tool.ruff.lint]
+select = [ "B", "E", "W", "F", "I", "TID", "C4", "N", "D", "ANN", "SIM" ]
+ignore = [
+    "D100",
+    "D105",
+    "B904",
+    "D204",
+    "D205",
+    "D400",
+    "D415",
+    "I001",
+    "D212",
+    "D203",
+    "D401"
+]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.params.Depends", "fastapi.Query", "fastapi.params.Query"]
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore docstring rules in the test directory
+"tests/*" = ["D"]
+
+[tool.pytest.ini_options]
+# Pytest configuration
+testpaths = "tests"
+addopts = "--strict-markers --import-mode=append"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
