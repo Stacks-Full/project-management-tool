@@ -1,0 +1,117 @@
+name: 🔒 Repo Access & Settings Audit
+
+on:
+  schedule:
+    # Runs at 3:00 AM EST (8:00 UTC)
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install axios
+
+      - name: Run permissions audit
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_ADMIN_TOKEN }}
+          ORG_NAME: Stacks Full
+          REPO_NAME: project-management-tool
+        run: |
+          node <<'EOF'
+          const fs = require('fs');
+          const axios = require('axios');
+
+          const org = process.env.ORG_NAME;
+          const repo = process.env.REPO_NAME;
+          const token = process.env.GITHUB_TOKEN;
+
+          const headers = { 
+            Authorization: `token ${token}`,
+            Accept: 'application/vnd.github.v3+json'
+          };
+
+          const logFile = '.github/logs/access_audit.log';
+          const requiredPermission = 'push'; // write access for contributors/developers
+
+          async function log(message) {
+            console.log(message);
+            fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${message}\n`);
+          }
+
+          async function getCollaborators() {
+            const res = await axios.get(`https://api.github.com/repos/${org}/${repo}/collaborators?per_page=100`, { headers });
+            return res.data;
+          }
+
+          async function getPermission(user) {
+            const res = await axios.get(`https://api.github.com/repos/${org}/${repo}/collaborators/${user}/permission`, { headers });
+            return res.data.permission;
+          }
+
+          async function updatePermission(user, perm) {
+            await axios.put(`https://api.github.com/repos/${org}/${repo}/collaborators/${user}`, 
+              { permission: perm }, { headers });
+            await log(`✅ Fixed permissions for ${user}: granted ${perm}`);
+          }
+
+          async function auditRepoSettings() {
+            const repoData = (await axios.get(`https://api.github.com/repos/${org}/${repo}`, { headers })).data;
+            const updates = {};
+
+            if (!repoData.has_issues) updates.has_issues = true;
+            if (!repoData.allow_squash_merge) updates.allow_squash_merge = true;
+            if (!repoData.allow_merge_commit) updates.allow_merge_commit = true;
+
+            if (Object.keys(updates).length > 0) {
+              await axios.patch(`https://api.github.com/repos/${org}/${repo}`, updates, { headers });
+              await log(`⚙️ Updated repo settings: ${JSON.stringify(updates)}`);
+            } else {
+              await log(`✅ Repo settings are consistent`);
+            }
+          }
+
+          (async () => {
+            fs.mkdirSync('.github/logs', { recursive: true });
+            fs.writeFileSync(logFile, `--- Repo Audit Log (${new Date().toLocaleString()}) ---\n`);
+
+            const collabs = await getCollaborators();
+            for (const c of collabs) {
+              const perm = await getPermission(c.login);
+              if (perm !== requiredPermission && perm !== 'admin') {
+                await log(`⚠️ ${c.login} has ${perm} access — fixing to ${requiredPermission}`);
+                await updatePermission(c.login, requiredPermission);
+              } else {
+                await log(`✅ ${c.login} has proper permissions (${perm})`);
+              }
+            }
+
+            await auditRepoSettings();
+            await log('--- Audit Complete ---');
+          })().catch(err => {
+            console.error(err);
+            fs.appendFileSync(logFile, `❌ Error: ${err.message}\n`);
+          });
+          EOF
+
+      - name: Commit audit log
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add .github/logs/access_audit.log
+          git commit -m "Automated permission audit log [skip ci]" || echo "No changes to commit"
+          git push
