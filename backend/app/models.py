@@ -14,7 +14,7 @@ class Project(Base):
 
 # Create tables in the database (if they don't exist)
 # NOTE: In a real app, Alembic is used for migrations, but this is fine for dev setup.
-def create_db_tables():
+def create_db_tables() -> None:
     """Attempts to create all defined tables in the connected database."""
     print("Attempting to create database tables...")
     try:
