@@ -24,8 +24,12 @@ COPY requirements/dev.txt /tmp/requirements/
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r /tmp/requirements/base.txt -r /tmp/requirements/dev.txt
 
-# 4. Copy the actual application code
+# 4. Copy the actual application code, tests, pyproject.toml
+# COPY app/ /app/app
 COPY app/ /app/app
+COPY tests/ /app/tests
+COPY pyproject.toml /app/pyproject.toml
+
 
 ENV PYTHONPATH=/app
 

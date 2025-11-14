@@ -1,4 +1,3 @@
-from typing import Generator
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from . import database, models
@@ -31,20 +30,12 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Dependency to get the DB session
-def get_db() -> Generator[Session, None, None]:
-    """Yield a database session and ensure it is closed after use."""
-    db = database.SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @app.on_event("startup")
 async def startup_event() -> None:
     """Handle application startup and initialize database connection."""
-    print("🚀 FastAPI Application Starting Up...")
-    print(f"📊 Connecting to DB at: {os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}")
+    print(" FastAPI Application Starting Up...")
+    print(f" Connecting to DB at: {os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}")
 
 @app.get("/")
 def root() -> dict[str, str]:
@@ -52,7 +43,7 @@ def root() -> dict[str, str]:
     return {"message": "Project Management API is running!"}
 
 @app.get("/health", tags=["Health Check"])
-def health_check(db: Session = Depends(get_db)) -> dict[str, str]:
+def health_check(db: Session = Depends(database.get_session)) -> dict[str, str]:
     """Check the API status and database connection."""
     try:
         # Try to execute a simple query to ensure the DB connection is live
@@ -63,7 +54,7 @@ def health_check(db: Session = Depends(get_db)) -> dict[str, str]:
         raise HTTPException(status_code=500, detail="Database connection failed")
 
 @app.get("/status", tags=["Health Check"])
-def status_check(db: Session = Depends(get_db)) -> dict[str, str]:
+def status_check(db: Session = Depends(database.get_session)) -> dict[str, str]:
     """Check the API status and database connection."""
     try:
         db.execute(text("SELECT 1"))
@@ -72,4 +63,3 @@ def status_check(db: Session = Depends(get_db)) -> dict[str, str]:
         print(f"Database error: {e}")
         raise HTTPException(status_code=500, detail="Database connection failed")
 
-# Your existing project endpoints...

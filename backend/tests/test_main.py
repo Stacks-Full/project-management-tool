@@ -18,7 +18,8 @@ mock_database.get_db = MagicMock()
 sys.modules['app.database'] = mock_database
 
 from fastapi.testclient import TestClient
-from app.main import app, get_db
+from app.main import app
+from app.database import get_session
 
 client = TestClient(app)
 
@@ -51,7 +52,7 @@ def test_health_check_success():
     """Test health endpoint when database connection succeeds"""
     # Mock the database session for this specific test
     mock_db = MagicMock()
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_session] = lambda: mock_db
 
     response = client.get("/health")
 
@@ -69,7 +70,7 @@ def test_health_check_failure():
     # Mock database to raise an exception
     mock_db = MagicMock()
     mock_db.execute.side_effect = Exception("Database connection error")
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_session] = lambda: mock_db
 
     response = client.get("/health")
 
@@ -82,7 +83,7 @@ def test_health_check_failure():
 def test_status_endpoint_success():
     """Test status endpoint when database connection succeeds"""
     mock_db = MagicMock()
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_session] = lambda: mock_db
 
     response = client.get("/status")
 
@@ -96,7 +97,7 @@ def test_status_endpoint_failure():
     """Test status endpoint when database connection fails"""
     mock_db = MagicMock()
     mock_db.execute.side_effect = Exception("Database error")
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_session] = lambda: mock_db
 
     response = client.get("/status")
 

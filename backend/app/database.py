@@ -1,8 +1,6 @@
 import os
 from typing import Generator
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, sessionmaker
+from sqlmodel import create_engine, Session, SQLModel
 from dotenv import load_dotenv
 
 # Load environment variables from .env file (if not running in Docker, Docker handles it)
@@ -26,20 +24,19 @@ SQLALCHEMY_DATABASE_URL = (
 
 # SQLAlchemy engine
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL
+    SQLALCHEMY_DATABASE_URL,
+    echo=False, # Set to True for development debugging
+    pool_recycle=3600
 )
 
-# SessionLocal is the class used to manage database sessions
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Base class for SQLAlchemy models
-Base = declarative_base()
+# Dependency function to get the SQLModel session
+def get_session() -> Generator[Session, None, None]:
+    """Provides a transactional database session using SQLModel."""
+    # Session is a context manager, preferred by SQLModel
+    with Session(engine) as session:
+        yield session
 
-# Dependency function to get the database session
-def get_db() -> Generator[Session, None, None]:
-    """Get db session"""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
+# Alembic will use SQLModel.metadata to discover all classes that inherit from SQLModel
+metadata = SQLModel.metadata
