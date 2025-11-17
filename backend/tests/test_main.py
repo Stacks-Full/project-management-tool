@@ -19,9 +19,9 @@ sys.modules['app.database'] = mock_database
 
 from fastapi.testclient import TestClient
 from app.main import app
-from app.database import get_session
+from app.core.database import get_session
 
-client = TestClient(app)
+client = TestClient(app, base_url="http://testserver/api")
 
 
 def test_simple_math():
