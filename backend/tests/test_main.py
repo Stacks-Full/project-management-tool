@@ -15,7 +15,7 @@ mock_database.SessionLocal = mock_session_local
 mock_database.get_db = MagicMock()
 
 # Inject mock into sys.modules BEFORE importing app
-sys.modules['app.database'] = mock_database
+sys.modules['app.core.database'] = mock_database
 
 from fastapi.testclient import TestClient
 from app.main import app
