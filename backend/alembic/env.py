@@ -11,8 +11,6 @@ from dotenv import load_dotenv
 
 from app.core.database import metadata
 
-import app.core.models
-
 load_dotenv()
 
 sys.path.append(os.path.abspath("."))
@@ -32,7 +30,7 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 target_metadata = metadata
 
-def process_revision_directives(context, revision, directives):
+def process_revision_directives(context, revision, directives) -> None:
     """Drop empty auto-generated migrations to avoid noise."""
     if not directives:
         return

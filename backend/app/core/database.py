@@ -44,7 +44,7 @@ def get_session() -> Generator[Session, None, None]:
 # Alembic will use SQLModel.metadata to discover all classes that inherit from SQLModel
 metadata = SQLModel.metadata
 
-def wait_for_db():
+def wait_for_db() -> None:
     """Wait for the database to accept connections."""
     max_retries = 10
     for i in range(max_retries):

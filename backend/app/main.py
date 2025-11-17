@@ -1,14 +1,17 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core import database
 import os
-import time
-from sqlalchemy import text
 from app.api import router as api_router
 
 database.wait_for_db()
 
 def create_app() -> FastAPI:
+    """
+    Initializes and configures the FastAPI application instance.
+    Configures Cross-Origin Resource Sharing (CORS) middleware to allow all requests, 
+    and includes the main API router under the '/api' prefix.
+    """
     app = FastAPI(
         title="Project Management API",
         description="FastAPI Backend for Project Management Tool",
