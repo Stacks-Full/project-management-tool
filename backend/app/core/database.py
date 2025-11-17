@@ -1,7 +1,10 @@
 import os
+import time
 from typing import Generator
+from sqlalchemy import text
 from sqlmodel import create_engine, Session, SQLModel
 from dotenv import load_dotenv
+from sqlalchemy.exc import OperationalError
 
 # Load environment variables from .env file (if not running in Docker, Docker handles it)
 load_dotenv()
@@ -40,3 +43,17 @@ def get_session() -> Generator[Session, None, None]:
 
 # Alembic will use SQLModel.metadata to discover all classes that inherit from SQLModel
 metadata = SQLModel.metadata
+
+def wait_for_db():
+    """Wait for the database to accept connections."""
+    max_retries = 10
+    for i in range(max_retries):
+        try:
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            print("Database connection successful!")
+            return
+        except OperationalError:
+            print(f"Database not ready yet (attempt {i+1})")
+            time.sleep(3)
+    raise Exception("Could not connect to database")
