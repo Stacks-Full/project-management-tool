@@ -64,7 +64,20 @@ jobs:
     # or others). This is typically only required for manual builds.
     # - name: Setup runtime (example)
     #   uses: actions/setup-example@v1
- 
+
+    - name: Check for JS/TS source files
+      id: check_source
+      if: matrix.language == 'javascript-typescript'
+      run: |
+        # Check if the SvelteKit source directory exists.
+        if [ ! -d "frontend/src" ]; then
+          echo "skip_js_analysis=true" >> $GITHUB_ENV
+          echo "Frontend source code directory (frontend/src) not found. Skipping JavaScript/TypeScript analysis."
+        else
+          echo "skip_js_analysis=false" >> $GITHUB_ENV
+        fi
+
+
     # Python setup
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -80,8 +93,10 @@ jobs:
         node-version: '20'
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
+      if: matrix.language == 'javascript-typescript' && env.skip_js_analysis != 'true'
+
     - name: Install Frontend Dependencies
-      if: matrix.language == 'javascript-typescript'
+      if: matrix.language == 'javascript-typescript' && env.skip_js_analysis != 'true'
       run: npm install
       working-directory: frontend
 
@@ -114,3 +129,4 @@ jobs:
       uses: github/codeql-action/analyze@v4
       with:
         category: "/language:${{matrix.language}}"
+      if: matrix.language != 'javascript-typescript' || env.skip_js_analysis != 'true'
