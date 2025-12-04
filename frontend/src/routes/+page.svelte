@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Button } from "$lib/components/ui/button/index.js";
+  import { Skull } from '@lucide/svelte';
 </script>
- 
-<Button>Click me</Button>
 
-<h1 class="text-emerald-600">Welcome to SvelteKit</h1>
+<Skull />
+
+<h1 class="text-green-900">Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
