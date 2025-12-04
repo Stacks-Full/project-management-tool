@@ -225,6 +225,7 @@ Thumbs.db
 
 # frontend .gitignore config
 frontend/node_modules
+frontend/.vscode/settings.json
 
 # Output
 frontend/.output
@@ -233,6 +234,7 @@ frontend/.netlify
 frontend/.wrangler
 frontend//.svelte-kit
 frontend//build
+
 
 # OS
 frontend/.DS_Store
