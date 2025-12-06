@@ -2,6 +2,7 @@
 Mock tests for CI verification
 These tests mock the database to avoid requiring a real database connection
 """
+
 import sys
 from unittest.mock import MagicMock
 
@@ -15,7 +16,7 @@ mock_database.SessionLocal = mock_session_local
 mock_database.get_db = MagicMock()
 
 # Inject mock into sys.modules BEFORE importing app
-sys.modules['app.core.database'] = mock_database
+sys.modules["app.core.database"] = mock_database
 
 from fastapi.testclient import TestClient
 from app.main import app
@@ -33,6 +34,7 @@ def test_simple_math():
 def test_imports_work():
     """Verify we can import our modules"""
     from app.main import app
+
     assert app is not None
 
 

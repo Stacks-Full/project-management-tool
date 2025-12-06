@@ -17,6 +17,18 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 
+
+# Check if required vars are loaded
+required_vars = {"DB_USER": DB_USER, "DB_PASSWORD": DB_PASSWORD, "DB_NAME": DB_NAME}
+missing_vars = [name for name, value in required_vars.items() if not value]
+
+if missing_vars:
+    # Fail fast before creating the engine URL
+    raise Exception(
+        f"Database configuration incomplete in core/database.py. Missing vars: {', '.join(missing_vars)}"
+    )
+
+
 # Create the MySQL connection URL
 # Note: This is crucial. It uses the service name 'db' as the hostname.
 SQLALCHEMY_DATABASE_URL = (
@@ -27,9 +39,7 @@ SQLALCHEMY_DATABASE_URL = (
 
 # SQLAlchemy engine
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    echo=False, # Set to True for development debugging
-    pool_recycle=3600
+    SQLALCHEMY_DATABASE_URL, echo=False, pool_recycle=3600  # Set to True for development debugging
 )
 
 
@@ -43,6 +53,7 @@ def get_session() -> Generator[Session, None, None]:
 
 # Alembic will use SQLModel.metadata to discover all classes that inherit from SQLModel
 metadata = SQLModel.metadata
+
 
 def wait_for_db() -> None:
     """Wait for the database to accept connections."""

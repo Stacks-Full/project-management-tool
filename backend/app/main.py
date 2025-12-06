@@ -6,10 +6,11 @@ from app.api import router as api_router
 
 database.wait_for_db()
 
+
 def create_app() -> FastAPI:
     """
     Initializes and configures the FastAPI application instance.
-    Configures Cross-Origin Resource Sharing (CORS) middleware to allow all requests, 
+    Configures Cross-Origin Resource Sharing (CORS) middleware to allow all requests,
     and includes the main API router under the '/api' prefix.
     """
     app = FastAPI(
@@ -19,15 +20,17 @@ def create_app() -> FastAPI:
     )
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=['*'],
+        allow_origins=["*"],
         allow_credentials=True,
-        allow_methods=['*'],
-        allow_headers=['*'],
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
-    app.include_router(api_router, prefix='/api')
+    app.include_router(api_router, prefix="/api")
     return app
 
+
 app = create_app()
+
 
 @app.on_event("startup")
 async def startup_event() -> None:

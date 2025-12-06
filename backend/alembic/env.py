@@ -9,7 +9,8 @@ from alembic import context
 
 from dotenv import load_dotenv
 
-from app.core.database import metadata
+from sqlmodel import SQLModel
+from app.core.models import *
 
 load_dotenv()
 
@@ -28,7 +29,8 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = metadata
+target_metadata = SQLModel.metadata
+
 
 def process_revision_directives(context, revision, directives) -> None:
     """Drop empty auto-generated migrations to avoid noise."""
@@ -41,33 +43,44 @@ def process_revision_directives(context, revision, directives) -> None:
         # Remove directive to skip creating an empty migration file
         directives[:] = []
 
+
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+
 def get_db_url():
     """Constructs the database URL from environment variables."""
-    # New variable for dialect, defaults to MySQL
-    db_dialect = os.getenv("DB_DIALECT", "mysql+mysqldb") 
+    db_dialect = os.getenv("DB_DIALECT", "mysql+mysqldb")
 
-    # Use environment variables for credentials and host
     db_user = os.getenv("DB_USER", "root")
-    db_pass = os.getenv("DB_PASSWORD", "")
+    # Removed the default value, requiring it to be set by the environment
+    db_pass = os.getenv("DB_PASSWORD")
     db_host = os.getenv("DB_HOST", "localhost")
 
-    # Generic port based on dialect (3306 for MySQL, 5432 for Postgres)
     default_port = "3306" if "mysql" in db_dialect else "5432"
     db_port = os.getenv("DB_PORT", default_port)
 
     db_name = os.getenv("DB_NAME", "generic_db")
 
-    if not all([db_user, db_pass, db_name]):
-        print("Error: DB_USER, DB_PASSWORD, or DB_NAME not set in environment.")
-        raise Exception("DB_USER, DB_PASSWORD, or DB_NAME not set in environment")
+    # DB_PASSWORD is now included in this list
+    required_vars = {"DB_USER": db_user, "DB_PASSWORD": db_pass, "DB_NAME": db_name}
+
+    missing_vars = [name for name, value in required_vars.items() if not value]
+
+    if missing_vars:
+        print(
+            f"Error: Missing required environment variables for database connection: {', '.join(missing_vars)}"
+        )
+        # This will raise excpetion fail fast
+        raise Exception(
+            "Database configuration incomplete. Please set required DB environment variables."
+        )
 
     # Use the dialect variable in the f-string
     return f"{db_dialect}://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
