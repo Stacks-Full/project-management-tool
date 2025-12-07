@@ -25,6 +25,7 @@ exclude = [
     "migrations",
     "venv",
     "tests",
+    "alembic"
 ]
 
 [tool.ruff.lint]
@@ -41,7 +42,9 @@ ignore = [
     "D212",
     "D203",
     "D401",
-    "D200"
+    "D200",
+    "E501",
+    "W291"
 ]
 
 [tool.ruff.lint.flake8-bugbear]
