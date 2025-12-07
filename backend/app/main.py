@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from . import database, models
+from . import database, models, schemas
 import os
 import time
 from sqlalchemy import text
@@ -62,4 +62,4 @@ def status_check(db: Session = Depends(database.get_session)) -> dict[str, str]:
     except Exception as e:
         print(f"Database error: {e}")
         raise HTTPException(status_code=500, detail="Database connection failed")
-
+    

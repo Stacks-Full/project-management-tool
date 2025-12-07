@@ -40,3 +40,4 @@ def get_session() -> Generator[Session, None, None]:
 
 # Alembic will use SQLModel.metadata to discover all classes that inherit from SQLModel
 metadata = SQLModel.metadata
+
