@@ -9,10 +9,12 @@ class UserCreate(BaseModel):
     password: str
 
 class UserLogin(BaseModel):
+    """Schema for user login"""
     email: EmailStr
     password: str 
 
 class UserPublic(BaseModel):
+    """Schema for user public"""
     id: int
     username: str
     email: EmailStr
@@ -27,4 +29,3 @@ class TokenResponse(BaseModel):
     """Schema for token responce"""
 
     user_token: str
-    
