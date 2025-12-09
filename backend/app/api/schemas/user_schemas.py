@@ -1,6 +1,8 @@
 from pydantic import BaseModel,EmailStr
 
 class UserCreate(BaseModel):
+    """Schema for creating a new user."""
+
     full_name: str
     email: EmailStr
     username: str
@@ -18,7 +20,11 @@ class UserPublic(BaseModel):
     is_online: bool
 
     class Config:
+        """Configuration to work with ORM objects."""
         from_attributes = True
 
-class tokenresponse(BaseModel):
+class TokenResponse(BaseModel):
+    """Schema for token responce"""
+
     user_token: str
+    
