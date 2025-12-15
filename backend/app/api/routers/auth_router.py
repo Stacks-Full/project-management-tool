@@ -11,19 +11,14 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
     "/register",
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
-    responses={
-        400: {
-            "model": dict,
-            "description": "Username or Email already exists."
-        }
-    }
+    responses={400: {"model": dict, "description": "Username or Email already exists."}},
 )
 def register_user(
     user_data: UserCreate,
-
     # Dependency Injection for DB Session
-    db: Session = Depends(get_session) ):
-
+    db: Session = Depends(get_session),
+) -> UserResponse:
+    """Registers a new user account and hashes the password"""
     # Instantiate the Service Layer
     user_service = UserService()
 

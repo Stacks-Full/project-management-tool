@@ -45,7 +45,7 @@ def test_fastapi_app_exists():
 
 def test_read_root():
     """Test the root endpoint returns correct message"""
-    response = client.get("/")
+    response = client.get("/v1")
     assert response.status_code == 200
     assert response.json() == {"message": "Project Management API is running!"}
 
@@ -56,7 +56,7 @@ def test_health_check_success():
     mock_db = MagicMock()
     app.dependency_overrides[get_session] = lambda: mock_db
 
-    response = client.get("/health")
+    response = client.get("/v1/health")
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "database": "connected"}
@@ -74,7 +74,7 @@ def test_health_check_failure():
     mock_db.execute.side_effect = Exception("Database connection error")
     app.dependency_overrides[get_session] = lambda: mock_db
 
-    response = client.get("/health")
+    response = client.get("/v1/health")
 
     assert response.status_code == 500
     assert response.json()["detail"] == "Database connection failed"
@@ -87,7 +87,7 @@ def test_status_endpoint_success():
     mock_db = MagicMock()
     app.dependency_overrides[get_session] = lambda: mock_db
 
-    response = client.get("/status")
+    response = client.get("/v1/status")
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "database": "connected"}
@@ -101,7 +101,7 @@ def test_status_endpoint_failure():
     mock_db.execute.side_effect = Exception("Database error")
     app.dependency_overrides[get_session] = lambda: mock_db
 
-    response = client.get("/status")
+    response = client.get("/v1/status")
 
     assert response.status_code == 500
     assert response.json()["detail"] == "Database connection failed"

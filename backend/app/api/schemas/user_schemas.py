@@ -20,7 +20,7 @@ class UserLogin(BaseModel):
 class UserResponse(BaseModel):
     """Defines the full user data returned to the user themselves"""
 
-    id: int = Field(..., alias='user_id')
+    id: int = Field(..., alias="user_id")
     full_name: str
     email: EmailStr
     username: str

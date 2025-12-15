@@ -28,10 +28,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.add_exception_handler(
-        UserAlreadyExistsError,
-        user_exists_exception_handler
-    )
+    app.add_exception_handler(UserAlreadyExistsError, user_exists_exception_handler)
     app.include_router(api_router, prefix="/api/v1")
     return app
 

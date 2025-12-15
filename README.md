@@ -44,6 +44,16 @@ These rules are non-negotiable and apply to everyone, regardless of experience.
 * **Principle of Least Privilege:** APIs that read data should **only** allow GET requests. APIs
     that create/update/delete should be protected with appropriate permissions/authentication.
 
+#### 4.1.1. Mandatory Quality Checks (Ruff, Black, & Pytest)
+
+Before creating a Pull Request, you **must** run the following checks inside the Docker container and ensure they pass with **0 errors**. **Do not push or open a PR until these pass.**
+
+| Check | Command (Run from Project Root) | Required Result |
+| :--- | :--- | :--- |
+| **Code Format (Black)** | `docker compose exec backend black /app` | Must report **0 files reformatted** (meaning your code is clean). |
+| **Code Style/Docs (Ruff)** | `docker compose exec backend ruff check /app/app` | Must report **Found 0 errors.** |
+| **Unit Tests (Pytest)** | `docker compose exec backend sh -c 'PYTHONPATH=/app DATABASE_URL="sqlite:///:memory:" /usr/local/bin/python -m pytest /app/tests'` | Must report **X passed** (where X is the number of collected tests). |
+
 ### 4.2. Contribution Rules (Branching & Merging)
 * **Main Branch Protection:** The `main` branch is protected and contains only stable, production-ready
     code. **NO DIRECT PUSHES TO `main` ARE ALLOWED.**

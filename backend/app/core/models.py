@@ -7,6 +7,7 @@ class User(SQLModel, table=True):
     Represents a user entity in the database.
     This is the core model for tracking user details
     """
+
     __tablename__ = "users"
 
     user_id: Optional[int] = Field(default=None, primary_key=True)

@@ -6,19 +6,21 @@ from .exceptions import UserAlreadyExistsError
 from .security import hash_password
 from sqlalchemy import or_
 
+
 class UserService:
-    # Set up the signature which receive a session and the data model
+    """Service class for handling all User-related business logic and database interactions"""
+
     def create_user(self, db: Session, user_data: UserCreate) -> User:
+        """Creates a new User after checking for duplicate email or username"""
         # Check for existing user
-        existing_user = db.query(User).filter(
-            or_(
-                User.email == user_data.email,
-                User.username == user_data.username
-            )
-        ).first()
+        existing_user = (
+            db.query(User)
+            .filter(or_(User.email == user_data.email, User.username == user_data.username))
+            .first()
+        )
 
         # Handle the duplicate case
-        if existing_user: 
+        if existing_user:
             # First check which field cause the error
             if existing_user.email == user_data.email:
                 raise UserAlreadyExistsError("Email is already registered.")
@@ -39,4 +41,3 @@ class UserService:
         db.refresh(new_user)
 
         return new_user
-
