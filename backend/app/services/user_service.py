@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-from app.core import models
 from app.core.models import User
 
 from app.api.schemas.user_schemas import UserCreate
@@ -23,7 +22,8 @@ class UserService:
             # First check which field cause the error
             if existing_user.email == user_data.email:
                 raise UserAlreadyExistsError("Email is already registered.")
-            elif existing_user.username == user_data.username:
+
+            if existing_user.username == user_data.username:
                 raise UserAlreadyExistsError("Username is already taken.")
 
         # Hash the password
