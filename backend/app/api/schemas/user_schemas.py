@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserCreate(BaseModel):
@@ -20,7 +20,7 @@ class UserLogin(BaseModel):
 class UserResponse(BaseModel):
     """Defines the full user data returned to the user themselves"""
 
-    id: int
+    id: int = Field(..., alias='user_id')
     full_name: str
     email: EmailStr
     username: str

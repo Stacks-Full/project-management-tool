@@ -2,9 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.core import database
+from .routers import auth_router
 
 router = APIRouter()
 
+router.include_router(
+    auth_router.router # We are including the 'router' variable from auth_router.py
+)
 
 @router.get("/")
 def root() -> dict[str, str]:

@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core import database
 import os
 from app.api import router as api_router
+from app.services.exceptions import UserAlreadyExistsError
+from app.core.exception_handlers import user_exists_exception_handler
+
 
 database.wait_for_db()
 
@@ -25,7 +28,11 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.include_router(api_router, prefix="/api")
+    app.add_exception_handler(
+        UserAlreadyExistsError,
+        user_exists_exception_handler
+    )
+    app.include_router(api_router, prefix="/api/v1")
     return app
 
 
