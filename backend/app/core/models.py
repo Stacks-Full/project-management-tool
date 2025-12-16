@@ -8,6 +8,8 @@ class User(SQLModel, table=True):
     This is the core model for tracking user details
     """
 
+    __tablename__ = "users"
+
     user_id: Optional[int] = Field(default=None, primary_key=True)
     full_name: str = Field(index=True, max_length=255)
     email: str = Field(index=True, unique=True, max_length=255)

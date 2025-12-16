@@ -225,3 +225,7 @@ Thumbs.db
 
 # node
 node_modules/
+
+
+# 
+pyrightconfig.json
