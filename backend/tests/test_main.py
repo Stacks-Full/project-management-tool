@@ -2,6 +2,7 @@
 Mock tests for CI verification
 These tests mock the database to avoid requiring a real database connection
 """
+
 import sys
 from unittest.mock import MagicMock
 
@@ -15,13 +16,13 @@ mock_database.SessionLocal = mock_session_local
 mock_database.get_db = MagicMock()
 
 # Inject mock into sys.modules BEFORE importing app
-sys.modules['app.database'] = mock_database
+sys.modules["app.core.database"] = mock_database
 
 from fastapi.testclient import TestClient
 from app.main import app
-from app.database import get_session
+from app.core.database import get_session
 
-client = TestClient(app)
+client = TestClient(app, base_url="http://testserver/api")
 
 
 def test_simple_math():
@@ -33,6 +34,7 @@ def test_simple_math():
 def test_imports_work():
     """Verify we can import our modules"""
     from app.main import app
+
     assert app is not None
 
 
@@ -43,7 +45,7 @@ def test_fastapi_app_exists():
 
 def test_read_root():
     """Test the root endpoint returns correct message"""
-    response = client.get("/")
+    response = client.get("/v1")
     assert response.status_code == 200
     assert response.json() == {"message": "Project Management API is running!"}
 
@@ -54,7 +56,7 @@ def test_health_check_success():
     mock_db = MagicMock()
     app.dependency_overrides[get_session] = lambda: mock_db
 
-    response = client.get("/health")
+    response = client.get("/v1/health")
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "database": "connected"}
@@ -72,7 +74,7 @@ def test_health_check_failure():
     mock_db.execute.side_effect = Exception("Database connection error")
     app.dependency_overrides[get_session] = lambda: mock_db
 
-    response = client.get("/health")
+    response = client.get("/v1/health")
 
     assert response.status_code == 500
     assert response.json()["detail"] == "Database connection failed"
@@ -85,7 +87,7 @@ def test_status_endpoint_success():
     mock_db = MagicMock()
     app.dependency_overrides[get_session] = lambda: mock_db
 
-    response = client.get("/status")
+    response = client.get("/v1/status")
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "database": "connected"}
@@ -99,7 +101,7 @@ def test_status_endpoint_failure():
     mock_db.execute.side_effect = Exception("Database error")
     app.dependency_overrides[get_session] = lambda: mock_db
 
-    response = client.get("/status")
+    response = client.get("/v1/status")
 
     assert response.status_code == 500
     assert response.json()["detail"] == "Database connection failed"

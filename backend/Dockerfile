@@ -14,6 +14,7 @@ RUN apt-get update \
         gcc \
         libmariadb-dev \
         pkg-config \
+        default-mysql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the requirements files
@@ -30,6 +31,8 @@ COPY app/ /app/app
 COPY tests/ /app/tests
 COPY pyproject.toml /app/pyproject.toml
 
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 ENV PYTHONPATH=/app
 
@@ -38,4 +41,8 @@ EXPOSE 8000
 
 # Default command to run the application using Uvicorn with auto-reload (development mode).
 # CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# use the start.sh script for sequential running of commands
+# TODO: decide on whether to check the db using docker or the start script
+# using docker might be slow but the container is sure to be operational
+CMD ["sh","/app/start.sh"]

@@ -3,3 +3,5 @@ black==25.9.0
 httpx==0.28.1
 debugpy
 ruff
+pwdlib[argon2]==0.3.0
+email-validator==2.3.0
