@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from app.core.database import get_session
-from app.services.user_service import UserService
-from app.api.schemas.user_schemas import UserCreate, UserResponse
+from app.services.user_service import UserService, UserLogin_create_token
+from app.api.schemas.user_schemas import UserCreate, UserResponse, TokenResponse
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -27,3 +27,9 @@ def register_user(
 
     # On success, the return value is automatically converted to UserResponse
     return new_user
+
+@router.post("/login", response_model=TokenResponse, status_code=status.Http_200_OK)
+def login_user(user_data: UserLogin_create_token, db: Session = Depends(get_session)) -> TokenResponse:
+    service = UserService()
+    token = service.user_login_create_token(db=db, user_data=user_data)
+    return token
