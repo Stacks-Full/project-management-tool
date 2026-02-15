@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Skull } from '@lucide/svelte';
+	import { Skull } from '@lucide/svelte';
 </script>
 
 <Skull />
