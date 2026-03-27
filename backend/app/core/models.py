@@ -3,11 +3,13 @@ from datetime import date
 from sqlmodel import SQLModel, Field, Relationship
 from app.core.enums import ProjectStatus, ProjectRoleEnum
 
+
 class User(SQLModel, table=True):
     """
     Represents a user entity in the database.
     This is the core model for tracking user details
     """
+
     __tablename__ = "users"
 
     user_id: Optional[int] = Field(default=None, primary_key=True)
@@ -22,6 +24,7 @@ class User(SQLModel, table=True):
 
 class Project(SQLModel, table=True):
     """Represents a project entity in the database"""
+
     __tablename__ = "projects"
 
     project_id: Optional[int] = Field(default=None, primary_key=True)
@@ -30,7 +33,7 @@ class Project(SQLModel, table=True):
     start_date: Optional[date] = Field(default=None)
     end_date: Optional[date] = Field(default=None)
     status: ProjectStatus = Field(default=ProjectStatus.PLANNING)
-    
+
     project_owner: int = Field(foreign_key="users.user_id")
 
     members: List["ProjectRole"] = Relationship(back_populates="project")
@@ -38,6 +41,7 @@ class Project(SQLModel, table=True):
 
 class ProjectRole(SQLModel, table=True):
     """Link table to manage User roles within Projects"""
+
     __tablename__ = "project_roles"
 
     role_id: Optional[int] = Field(default=None, primary_key=True)

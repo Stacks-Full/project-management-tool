@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ProjectStatus(str, Enum):
     """Enumeration of project lifecycle stages"""
 
@@ -14,4 +15,3 @@ class ProjectRoleEnum(str, Enum):
     OWNER = "owner"
     COLLABORATOR = "collaborator"
     VIEWER = "viewer"
-
