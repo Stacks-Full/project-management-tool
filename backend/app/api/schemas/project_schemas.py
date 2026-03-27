@@ -1,23 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import date
 from typing import Optional, List
-from enum import Enum
-
-
-class ProjectStatus(str, Enum):
-    """Enumeration of project lifecycle stages"""
-
-    PLANNING = "Planning"
-    IN_PROGRESS = "In Progress"
-    COMPLETED = "Completed"
-
-
-class ProjectRoleEnum(str, Enum):
-    """Enumeration of access levels within a project"""
-
-    OWNER = "owner"
-    COLLABORATOR = "collaborator"
-    VIEWER = "viewer"
+from app.core.enums import ProjectStatus, ProjectRoleEnum
 
 
 class MemberResponse(BaseModel):
